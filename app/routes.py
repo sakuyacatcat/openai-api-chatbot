@@ -1,7 +1,7 @@
 import os
 
 import openai
-from flask import Blueprint, jsonify, request
+from flask import Blueprint, Flask, jsonify, render_template, request
 
 bp = Blueprint("routes", __name__)
 
@@ -28,3 +28,8 @@ def chat():
     user_input = request.json.get("user_input", "")
     bot_response = generate_gpt3_response(user_input)
     return jsonify({"response": bot_response})
+
+
+@bp.route("/")
+def index():
+    return render_template("index.html")
