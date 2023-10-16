@@ -1,9 +1,12 @@
 version: "3"
 services:
   web:
+    container_name: openai-api-chatbot
     build: .
     volumes:
       - .:/app
+    environment:
+      - MODEL_NAME=gpt-3.5-turbo
     ports:
       - "3000:5000"
     env_file:

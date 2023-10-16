@@ -6,27 +6,21 @@ from flask import Blueprint, Flask, jsonify, render_template, request
 bp = Blueprint("routes", __name__)
 
 
-def generate_gpt3_response(
-    prompt, max_tokens=1024, n=1, stop=None, temperature=0.5
-):
-    openai.api_key = os.environ.get("API_KEY")  # 環境変数からAPIキーを取得
+def generate_gpt3_response(conversation):
+    openai.api_key = os.environ.get("API_KEY")
+    model_name = os.environ.get("MODEL_NAME", "gpt-3.5-turbo")
 
-    response = openai.Completion.create(
-        engine="text-davinci-002",
-        prompt=prompt,
-        max_tokens=max_tokens,
-        n=n,
-        stop=stop,
-        temperature=temperature,
+    response = openai.ChatCompletion.create(
+        model=model_name, messages=conversation
     )
 
-    return response.choices[0].text.strip()
+    return response["choices"][0]["message"]["content"].strip()
 
 
 @bp.route("/chat", methods=["POST"])
 def chat():
-    user_input = request.json.get("user_input", "")
-    bot_response = generate_gpt3_response(user_input)
+    conversation = request.json.get("conversation", [])
+    bot_response = generate_gpt3_response(conversation)
     return jsonify({"response": bot_response})
 
 
